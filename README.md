@@ -1,10 +1,10 @@
-# Rat
+# Mouser
 
-Use a smartphone to control your computer mouse.
+Mouser (mouse remotely): use a smartphone to control your computer mouse.
 
 ### Why?
 
-Out of laziness. Sometimes the computer is far away and clicking something would require getting up.
+Sometimes the computer is far away and clicking something would require getting up.
 
 ### Notes/ideas
 
