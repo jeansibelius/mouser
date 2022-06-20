@@ -90,6 +90,13 @@ window.addEventListener("load", function(evt) {
         }
         return false;
     };
+    document.getElementById("close").onclick = function(evt) {
+        if (!ws) {
+            return false;
+        }
+        ws.close();
+        return false;
+    };
     document.getElementById("up").onclick = function(evt) {
         if (!ws) {
             return false;
@@ -140,13 +147,6 @@ window.addEventListener("load", function(evt) {
         }
         print("CLICK: RIGHT");
         ws.send("right");
-        return false;
-    };
-    document.getElementById("close").onclick = function(evt) {
-        if (!ws) {
-            return false;
-        }
-        ws.close();
         return false;
     };
 });
