@@ -62,11 +62,7 @@ type InputEvent struct {
 	value                C.int
 }
 
-func createInputEvent(eventType C.uint, eventCode C.uint, value C.int) InputEvent {
-	return InputEvent{eventType: eventType, eventCode: eventCode, value: value}
-}
-
-func sendEvents(vm *VirtualMouse, events []InputEvent) {
+func (vm *VirtualMouse) SendEvents(events []InputEvent) {
 	for i := range events {
 		vm.WriteEvent(events[i].eventType, events[i].eventCode, events[i].value)
 	}
@@ -84,9 +80,9 @@ func sendEvents(vm *VirtualMouse, events []InputEvent) {
 func (vm *VirtualMouse) Move(x int, y int) {
 	fmt.Printf("About to move mouse: x %d y %d\n", x, y)
 	var events []InputEvent
-	events = append(events, createInputEvent(C.EV_REL, C.REL_X, C.int(x)))
-	events = append(events, createInputEvent(C.EV_REL, C.REL_Y, C.int(y)))
-	sendEvents(vm, events)
+	events = append(events, InputEvent{C.EV_REL, C.REL_X, C.int(x)})
+	events = append(events, InputEvent{C.EV_REL, C.REL_Y, C.int(y)})
+	vm.SendEvents(events)
 }
 
 func (vm *VirtualMouse) Click(button string) {
@@ -94,15 +90,15 @@ func (vm *VirtualMouse) Click(button string) {
 	fmt.Printf("About to press mouse button: %s\n", button)
 	switch button {
 	case "left":
-		events = append(events, createInputEvent(C.EV_KEY, C.BTN_LEFT, 1))
+		events = append(events, InputEvent{C.EV_KEY, C.BTN_LEFT, 1})
 	case "right":
-		events = append(events, createInputEvent(C.EV_KEY, C.BTN_RIGHT, 1))
+		events = append(events, InputEvent{C.EV_KEY, C.BTN_RIGHT, 1})
 	case "middle":
-		events = append(events, createInputEvent(C.EV_KEY, C.BTN_MIDDLE, 1))
+		events = append(events, InputEvent{C.EV_KEY, C.BTN_MIDDLE, 1})
 	default:
 		fmt.Println("No valid button provided.")
 	}
-	sendEvents(vm, events)
+	vm.SendEvents(events)
 }
 
 func (u *VirtualMouse) Close() {
