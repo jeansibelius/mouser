@@ -1,6 +1,6 @@
 # 🐭 Mouser
 
-Mouser (mouse remotely): use a smartphone to control your computer mouse.
+Mouser (mouse remotely): use a smartphone (or any device with a browser) to control your computer mouse.
 
 ### 🙈 Why?
 
