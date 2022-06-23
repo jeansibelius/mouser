@@ -18,6 +18,7 @@ Sometimes the computer is far away and clicking something would require getting 
 ### 📎 Dependencies
 
 - [Go](https://go.dev/)
+- [Gorilla](https://github.com/gorilla/websocket)
 - [libevdev](https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/libevdev)
 
 ## 🤸 Notes/ideas
