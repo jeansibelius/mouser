@@ -21,3 +21,4 @@ Sometimes the computer is far away and clicking something would require getting 
 - https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/
 - https://github.com/gorilla/websocket/tree/master/examples/echo
 - https://github.com/joshuar/gokbd
+- https://www.instructables.com/Making-a-Joystick-With-HTML-pure-JavaScript/
