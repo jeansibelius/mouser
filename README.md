@@ -13,9 +13,9 @@ Sometimes the computer is far away and clicking something would require getting 
 - Optionally provide flag `-addr [host:port]` to run at custom location (default 192.168.1.5:8080)
 - Access the address above to control your computer mouse.\*
 
-_Tested and used only on Ubuntu 22.04._
+\*_Tested and used only on Ubuntu 22.04._
 
-### Dependencies
+### 📎 Dependencies
 
 - [Go](https://go.dev/)
 - [libevdev](https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/libevdev)
