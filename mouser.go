@@ -55,7 +55,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate.Execute(w, "ws://"+r.Host+"/mouse")
 }
 
-var htmlTemplate, _ = template.ParseFiles("joystick.html")
+var htmlTemplate, _ = template.ParseFiles("index.html")
 
 func main() {
 	defer vMouse.Close()

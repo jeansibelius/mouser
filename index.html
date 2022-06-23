@@ -40,7 +40,7 @@
       let canvas, ctx;
       let width, height, radius, xOrig, yOrig;
 
-      const resize = () => {
+      const resizeCanvas = () => {
         width = window.innerWidth;
         radius = width / 4 > 200 ? 200 : width / 4;
         height = window.innerHeight;
@@ -54,7 +54,8 @@
         xOrig = width / 2;
         yOrig = height / 3;
         ctx.beginPath();
-        ctx.arc(xOrig, yOrig, radius + radius * 0.1, 0, Math.PI * 2, true);
+        ctx.arc(xOrig, yOrig, radius + radius * 0.13, 0, Math.PI * 2, true);
+        ctx.shadowColor = "transparent";
         ctx.fillStyle = "#ECE9E9";
         ctx.fill();
       };
@@ -62,15 +63,19 @@
       const joystickCircle = (width, height) => {
         ctx.beginPath();
         ctx.arc(width, height, radius, 0, Math.PI * 2, true);
-        ctx.fillStyle = "#21003c";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetX = 6;
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = "rgb(33, 0, 60)";
         ctx.fill();
-        ctx.strokeStyle = "#b69bcc";
+        ctx.strokeStyle = "rgb(182, 155, 204)";
         ctx.lineWidth = 8;
         ctx.stroke();
       };
 
+      // Cursor coordinates
       const coord = { x: 0, y: 0 };
-      let paint = false;
 
       const getPosition = (event) => {
         const cursorX = event.clientX || event.touches[0].clientX;
@@ -82,11 +87,14 @@
       const isInCircle = () => {
         const current_radius = Math.sqrt(Math.pow(coord.x - xOrig, 2) + Math.pow(coord.y - yOrig, 2));
         if (radius >= current_radius) return true;
-        else return false;
+        return false;
       };
 
+      // State of painting
+      let isPainting = false;
+
       const startDrawing = (event) => {
-        paint = true;
+        isPainting = true;
         getPosition(event);
         if (isInCircle()) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -97,14 +105,14 @@
       };
 
       const stopDrawing = () => {
-        paint = false;
+        isPainting = false;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         joystickBg();
         joystickCircle(width / 2, height / 3);
       };
 
       const Draw = (event) => {
-        if (paint) {
+        if (isPainting) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           joystickBg();
           let x, y;
@@ -122,8 +130,11 @@
 
           getPosition(event);
 
-          const x_relative = Math.round(x - xOrig);
-          const y_relative = Math.round(y - yOrig);
+          const xDelta = Math.round(x - xOrig);
+          const yDelta = Math.round(y - yOrig);
+          // Constrain max "speed" of mouse to make it more controllable
+          const x_relative = Math.abs(xDelta) > 8 ? Math.sign(xDelta) * 8 : xDelta;
+          const y_relative = Math.abs(yDelta) > 8 ? Math.sign(yDelta) * 8 : yDelta;
 
           send(x_relative, y_relative);
         }
@@ -133,7 +144,7 @@
         status = document.getElementById("status");
         canvas = document.getElementById("canvas");
         ctx = canvas.getContext("2d");
-        resize();
+        resizeCanvas();
 
         // Mouse events
         document.addEventListener("mousedown", startDrawing);
@@ -146,13 +157,13 @@
         document.addEventListener("touchcancel", stopDrawing);
         document.addEventListener("touchmove", Draw);
 
+        // Mouse buttons
         document.getElementById("left").onclick = () => {
           if (!ws) {
             return;
           }
           console.log("Click: left");
           ws.send("left");
-          window.document.body.focus();
         };
         document.getElementById("right").onclick = () => {
           if (!ws) {
@@ -163,12 +174,13 @@
         };
 
         // Set canvas size
-        window.addEventListener("resize", resize);
+        window.addEventListener("resize", resizeCanvas);
       });
     </script>
     <style>
       body {
         position: fixed;
+        margin: 0;
         font-family: Ubuntu, sans-serif;
         font-size: x-large;
         text-align: center;
@@ -189,6 +201,7 @@
         vertical-align: middle;
         text-shadow: 0px 0px 5px;
         color: red;
+        margin-left: 5px;
       }
       .connected {
         color: #00db6d !important;
