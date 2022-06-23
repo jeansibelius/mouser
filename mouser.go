@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -51,9 +53,11 @@ func handleMouse(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var htmlTemplate, _ = template.ParseFiles("index.html")
-
 func home(w http.ResponseWriter, r *http.Request) {
+	htmlTemplate, err := template.ParseFiles("./index.html")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing html file: %s\n", err)
+	}
 	htmlTemplate.Execute(w, "ws://"+r.Host+"/mouse")
 }
 
