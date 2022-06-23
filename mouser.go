@@ -51,11 +51,11 @@ func handleMouse(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var htmlTemplate, _ = template.ParseFiles("index.html")
+
 func home(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate.Execute(w, "ws://"+r.Host+"/mouse")
 }
-
-var htmlTemplate, _ = template.ParseFiles("index.html")
 
 func main() {
 	defer vMouse.Close()
