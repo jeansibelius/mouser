@@ -32,9 +32,11 @@ func handleMouseHttps(w http.ResponseWriter, r *http.Request) {
 		x, _ := strconv.Atoi(arr[0])
 		y, _ := strconv.Atoi(arr[1])
 		vMouse.Move(x, y)
+		fmt.Println("Move:", str)
 	} else {
 		// Else it's a mouse click
 		vMouse.Click(str)
+		fmt.Println("Click:", str)
 	}
 	_, err = w.Write(body)
 	if err != nil {
@@ -51,7 +53,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 	if pusher, ok := w.(http.Pusher); ok {
 		// Push is supported.
-		if err := pusher.Push("/static/joystick.js", nil); err != nil {
+		if err := pusher.Push("/static/app.js", nil); err != nil {
 			log.Printf("Failed to push: %v", err)
 		}
 		if err := pusher.Push("/static/style.css", nil); err != nil {

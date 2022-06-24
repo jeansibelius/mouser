@@ -2,6 +2,8 @@
 
 Mouser (mouse remotely): use a smartphone (or any device with a browser) to control your computer mouse.
 
+Thanks to [@martinheidegger](https://github.com/martinheidegger) for contributions and support.
+
 ### 🙈 Why?
 
 Sometimes the computer is far away and clicking something would require getting up from the sofa. This simplifies that task.
@@ -30,6 +32,5 @@ Create self-signed ones with `openssl req -newkey rsa:2048 -nodes -keyout server
 ## 📑 References
 
 - https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/
-- https://github.com/gorilla/websocket/tree/master/examples/echo
 - https://github.com/joshuar/gokbd
 - https://www.instructables.com/Making-a-Joystick-With-HTML-pure-JavaScript/
