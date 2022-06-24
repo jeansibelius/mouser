@@ -1,0 +1,39 @@
+body {
+  position: fixed;
+  margin: 0;
+  font-family: Ubuntu, sans-serif;
+  font-size: x-large;
+  text-align: center;
+}
+h1 {
+  color: black;
+  margin-bottom: 0px;
+}
+p {
+  color: rgb(128, 128, 128);
+  font-size: small;
+}
+#header {
+  margin-bottom: 10vh;
+}
+#status {
+  font-size: xx-large;
+  vertical-align: middle;
+  text-shadow: 0px 0px 5px;
+  color: #00db6d;
+  margin-left: 5px;
+}
+.notConnected {
+  color: red !important;
+}
+button {
+  padding: 3vh 6vh;
+  background: lightgray;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px #1111111c;
+}
+button:active {
+  background: gray;
+  box-shadow: 1px 1px 3px #1111111c;
+}

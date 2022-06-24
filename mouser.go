@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -10,62 +11,67 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/gorilla/websocket"
 	"github.com/jeansibelius/mouser/virtualMouse"
 )
 
-var addr = flag.String("addr", "192.168.1.5:8080", "http service address")
+var addr = flag.String("addr", ":8080", "http service address")
 var vMouse = virtualMouse.NewVirtualMouse("Mouser")
 
-var upgrader = websocket.Upgrader{} // use default options
-
-func handleMouse(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
+func handleMouseHttps(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Print("upgrade:", err)
-		return
+		log.Println("read:", err)
 	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
 
-		// Get message (coordinates or button click)
-		str := string(message)
-		// If we have a comma separated array, it's coordinates
-		arr := strings.Split(str, ",")
-		if len(arr) > 1 {
-			x, _ := strconv.Atoi(arr[0])
-			y, _ := strconv.Atoi(arr[1])
-			vMouse.Move(x, y)
-		} else {
-			// Else it's a mouse click
-			vMouse.Click(str)
-		}
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
+	// Get message (coordinates or button click)
+	str := string(body)
+	// If we have a comma separated array, it's coordinates
+	arr := strings.Split(str, ",")
+	if len(arr) > 1 {
+		x, _ := strconv.Atoi(arr[0])
+		y, _ := strconv.Atoi(arr[1])
+		vMouse.Move(x, y)
+	} else {
+		// Else it's a mouse click
+		vMouse.Click(str)
+	}
+	_, err = w.Write(body)
+	if err != nil {
+		log.Println("write:", err)
 	}
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
+	// The "/" pattern matches everything, so we need to check
+	// that we're at the root here.
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	if pusher, ok := w.(http.Pusher); ok {
+		// Push is supported.
+		if err := pusher.Push("/static/joystick.js", nil); err != nil {
+			log.Printf("Failed to push: %v", err)
+		}
+		if err := pusher.Push("/static/style.css", nil); err != nil {
+			log.Printf("Failed to push: %v", err)
+		}
+	}
 	htmlTemplate, err := template.ParseFiles("./index.html")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing html file: %s\n", err)
 	}
-	htmlTemplate.Execute(w, "ws://"+r.Host+"/mouse")
+	htmlTemplate.Execute(w, "https://"+r.Host+"/mouse")
 }
 
 func main() {
 	defer vMouse.Close()
 	flag.Parse()
 	log.SetFlags(0)
-	http.HandleFunc("/mouse", handleMouse)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.HandleFunc("/mouse", handleMouseHttps)
 	http.HandleFunc("/", home)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	fmt.Printf("Starting to listen to mouse events at %s\n", *addr)
+	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", nil))
 }
