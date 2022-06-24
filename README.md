@@ -15,11 +15,13 @@ Sometimes the computer is far away and clicking something would require getting 
 
 \*_Tested and used only on Ubuntu 22.04._
 
-### 📎 Dependencies
+### 📎 Dependencies & requirements
 
 - [Go](https://go.dev/)
-- [Gorilla](https://github.com/gorilla/websocket)
 - [libevdev](https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/libevdev)
+
+You will need `server.crt` & `server.key` files in a subfolder `./cert`.  
+Create self-signed ones with `openssl req -newkey rsa:2048 -nodes -keyout server.key -x509 -days 365 -out server.crt`.
 
 ## 🤸 Notes/ideas
 

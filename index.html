@@ -5,35 +5,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <script>
-      let ws;
       let status;
 
-      ws = new WebSocket("{{.}}");
-      ws.onopen = () => {
+      const postData = async (data) => {
+        const response = await fetch("{{.}}", {
+          method: "POST",
+          body: data,
+          headers: {
+            "Content-Type": "application/text",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+          status.classList.remove("connected");
+        }
         status.classList.add("connected");
-      };
-      ws.onclose = () => {
-        status.classList.remove("connected");
-        ws = null;
-      };
-      ws.onmessage = async (event) => {
-        console.log("Server:", event.data);
-      };
-      ws.onerror = (err) => {
-        console.error("WebSocket Error", err);
       };
 
       const parseCoordinates = (x, y) => {
         return String(x) + "," + String(y);
       };
 
-      const send = (x, y) => {
-        if (!ws) {
-          return;
-        }
+      const send = async (x, y) => {
         const coord = parseCoordinates(x, y);
-        console.log(coord);
-        ws.send(coord);
+        await postData(coord);
       };
 
       // Joystick
@@ -159,18 +155,10 @@
 
         // Mouse buttons
         document.getElementById("left").onclick = () => {
-          if (!ws) {
-            return;
-          }
-          console.log("Click: left");
-          ws.send("left");
+          postData("left");
         };
         document.getElementById("right").onclick = () => {
-          if (!ws) {
-            return;
-          }
-          console.log("Click: right");
-          ws.send("right");
+          postData("right");
         };
 
         // Set canvas size
@@ -222,7 +210,7 @@
   <body>
     <div id="header">
       <h1>MOUSER</h1>
-      <p>WebSocket connection <span id="status">•</span></p>
+      <p>Connection <span id="status">•</span></p>
     </div>
     <button id="left">Left</button>
     <button id="right">Right</button>
