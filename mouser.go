@@ -32,9 +32,11 @@ func handleMouseHttps(w http.ResponseWriter, r *http.Request) {
 		x, _ := strconv.Atoi(arr[0])
 		y, _ := strconv.Atoi(arr[1])
 		vMouse.Move(x, y)
+		fmt.Println("Move:", str)
 	} else {
 		// Else it's a mouse click
 		vMouse.Click(str)
+		fmt.Println("Click:", str)
 	}
 	_, err = w.Write(body)
 	if err != nil {

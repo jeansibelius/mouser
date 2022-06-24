@@ -1,20 +1,28 @@
 body {
-  position: fixed;
-  margin: 0;
   font-family: Ubuntu, sans-serif;
   font-size: x-large;
   text-align: center;
+  margin: 0;
+  /* Background from https://projects.verou.me/css3patterns/#cross-dots */
+  background-color: rgb(237, 247, 255);
+  background-image: linear-gradient(white 2px, transparent 2px), linear-gradient(90deg, white 2px, transparent 2px),
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 }
 h1 {
   color: black;
-  margin-bottom: 0px;
+  margin: 0;
 }
 p {
   color: rgb(128, 128, 128);
   font-size: small;
 }
 #header {
-  margin-bottom: 10vh;
+  padding-top: 4vh;
+  padding-bottom: 14vh;
+  background-image: linear-gradient(white 30%, transparent);
 }
 #status {
   font-size: xx-large;
@@ -28,7 +36,7 @@ p {
 }
 button {
   padding: 3vh 6vh;
-  background: lightgray;
+  background: white;
   border: none;
   border-radius: 5px;
   box-shadow: 1px 1px 5px #1111111c;
