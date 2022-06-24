@@ -30,6 +30,5 @@ Create self-signed ones with `openssl req -newkey rsa:2048 -nodes -keyout server
 ## 📑 References
 
 - https://gitlab.freedesktop.org/libevdev/libevdev/-/tree/master/
-- https://github.com/gorilla/websocket/tree/master/examples/echo
 - https://github.com/joshuar/gokbd
 - https://www.instructables.com/Making-a-Joystick-With-HTML-pure-JavaScript/
