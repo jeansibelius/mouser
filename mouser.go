@@ -43,11 +43,25 @@ func handleMouseHttps(w http.ResponseWriter, r *http.Request) {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
+	// The "/" pattern matches everything, so we need to check
+	// that we're at the root here.
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	if pusher, ok := w.(http.Pusher); ok {
+		// Push is supported.
+		if err := pusher.Push("/static/joystick.js", nil); err != nil {
+			log.Printf("Failed to push: %v", err)
+		}
+		if err := pusher.Push("/static/style.css", nil); err != nil {
+			log.Printf("Failed to push: %v", err)
+		}
+	}
 	htmlTemplate, err := template.ParseFiles("./index.html")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing html file: %s\n", err)
 	}
-	//htmlTemplate.Execute(w, "ws://"+r.Host+"/mouse")
 	htmlTemplate.Execute(w, "https://"+r.Host+"/mouse")
 }
 
@@ -55,7 +69,9 @@ func main() {
 	defer vMouse.Close()
 	flag.Parse()
 	log.SetFlags(0)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/mouse", handleMouseHttps)
 	http.HandleFunc("/", home)
+	fmt.Printf("Starting to listen to mouse events at %s\n", *addr)
 	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", nil))
 }
