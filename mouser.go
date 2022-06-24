@@ -53,7 +53,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 	if pusher, ok := w.(http.Pusher); ok {
 		// Push is supported.
-		if err := pusher.Push("/static/joystick.js", nil); err != nil {
+		if err := pusher.Push("/static/app.js", nil); err != nil {
 			log.Printf("Failed to push: %v", err)
 		}
 		if err := pusher.Push("/static/style.css", nil); err != nil {

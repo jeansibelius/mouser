@@ -85,10 +85,6 @@ const listenMouseMove = (onImmediate, onFrame) => {
   };
 };
 
-const sendDelta = (current, previous) => {
-  postData(`${current.x - previous.x},${current.y - previous.y}`);
-};
-
 const unlisten = listenMouseMove(
   (current, previous) => {
     postData(`${current.x - previous.x},${current.y - previous.y}`);
