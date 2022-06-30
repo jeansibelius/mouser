@@ -75,9 +75,13 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/mouse", handleMouseHttps)
 	http.HandleFunc("/", home)
+
+	// Get local IP address
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
 	conn.Close()
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	// Print local IP address & port for convenience
 	fmt.Printf("Starting to listen to mouse events at %s%s\n", localAddr.IP.String(), *addr)
+
 	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", nil))
 }
