@@ -18,7 +18,7 @@ import (
 var addr = flag.String("addr", ":8080", "http service address")
 var vMouse = virtualMouse.NewVirtualMouse("Mouser")
 
-func handleMouseHttps(w http.ResponseWriter, r *http.Request) {
+func handleMouse(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -68,13 +68,20 @@ func home(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate.Execute(w, "https://"+r.Host+"/mouse")
 }
 
+func setupHandler() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", home)
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	mux.HandleFunc("/mouse", handleMouse)
+	return mux
+}
+
 func main() {
 	defer vMouse.Close()
 	flag.Parse()
 	log.SetFlags(0)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/mouse", handleMouseHttps)
-	http.HandleFunc("/", home)
+
+	handler := setupHandler()
 
 	// Get local IP address
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
@@ -83,5 +90,5 @@ func main() {
 	// Print local IP address & port for convenience
 	fmt.Printf("Starting to listen to mouse events at %s%s\n", localAddr.IP.String(), *addr)
 
-	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", nil))
+	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", handler))
 }
