@@ -13,6 +13,7 @@ import (
 	"text/template"
 
 	"github.com/jeansibelius/mouser/virtualMouse"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
@@ -52,6 +53,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
 	if pusher, ok := w.(http.Pusher); ok {
 		// Push is supported.
 		if err := pusher.Push("/static/app.js", nil); err != nil {
@@ -68,20 +70,14 @@ func home(w http.ResponseWriter, r *http.Request) {
 	htmlTemplate.Execute(w, "https://"+r.Host+"/mouse")
 }
 
-func setupHandler() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	mux.HandleFunc("/mouse", handleMouse)
-	return mux
-}
-
 func main() {
 	defer vMouse.Close()
 	flag.Parse()
 	log.SetFlags(0)
 
-	handler := setupHandler()
+	http.HandleFunc("/", home)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.HandleFunc("/mouse", handleMouse)
 
 	// Get local IP address
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
@@ -90,5 +86,5 @@ func main() {
 	// Print local IP address & port for convenience
 	fmt.Printf("Starting to listen to mouse events at %s%s\n", localAddr.IP.String(), *addr)
 
-	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", handler))
+	log.Fatal(http3.ListenAndServe(*addr, "./cert/server.crt", "./cert/server.key", nil))
 }
