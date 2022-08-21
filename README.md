@@ -2,8 +2,6 @@
 
 Mouser (mouse remotely): use a smartphone (or any device with a browser) to control your computer mouse.
 
-Thanks to [@martinheidegger](https://github.com/martinheidegger) for contributions and support.
-
 ### 🙈 Why?
 
 Sometimes the computer is far away and clicking something would require getting up from the sofa. This simplifies that task.
