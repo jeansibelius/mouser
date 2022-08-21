@@ -13,6 +13,7 @@ import (
 	"text/template"
 
 	"github.com/jeansibelius/mouser/virtualMouse"
+	"github.com/lucas-clemente/quic-go/http3"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
@@ -83,5 +84,5 @@ func main() {
 	// Print local IP address & port for convenience
 	fmt.Printf("Starting to listen to mouse events at %s%s\n", localAddr.IP.String(), *addr)
 
-	log.Fatal(http.ListenAndServeTLS(*addr, "./cert/server.crt", "./cert/server.key", nil))
+	log.Fatal(http3.ListenAndServe(*addr, "./cert/server.crt", "./cert/server.key", nil))
 }

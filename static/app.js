@@ -1,4 +1,4 @@
-let statusEl;
+let connectionStatusIndicator;
 
 const postData = async (data) => {
   try {
@@ -9,93 +9,51 @@ const postData = async (data) => {
         "Content-Type": "application/text",
       },
     });
-
     if (!response.ok) {
-      statusEl.classList.add("notConnected");
+      connectionStatusIndicator.classList.add("notConnected");
       throw new Error(`Request failed with status ${response.status}`);
     }
-    statusEl.classList.remove("notConnected");
+    connectionStatusIndicator.classList.remove("notConnected");
   } catch (e) {
-    statusEl.classList.add("notConnected");
+    connectionStatusIndicator.classList.add("notConnected");
     console.error(e.message);
   }
 };
 
-const listenMouseMove = (onImmediate, onFrame) => {
-  let isDown = false;
-  let current = { x: 0, y: 0 };
-  let previous = { x: 0, y: 0 };
+let pointerIsDown = false;
+let previousPos = { x: 0, y: 0 };
 
-  const setCurrent = (event) => {
-    current = {
-      x: event.clientX || event.touches[0].clientX,
-      y: event.clientY || event.touches[0].clientY,
-    };
-  };
-
-  const checkRedraw = () => {
-    if (current !== previous) {
-      const prev = previous;
-      previous = current;
-      onFrame(current, prev);
-    }
-    if (isDown) {
-      window.requestAnimationFrame(checkRedraw);
-    }
-  };
-
-  const onStart = (event) => {
-    isDown = true;
-    setCurrent(event);
-    onMove(event);
-    checkRedraw();
-  };
-
-  const onEnd = () => {
-    isDown = false;
-  };
-
-  const onMove = (event) => {
-    if (isDown) {
-      previous = current;
-      setCurrent(event);
-      onImmediate(current, previous);
-    }
-  };
-
-  document.addEventListener("mousedown", onStart);
-  document.addEventListener("mouseup", onEnd);
-  document.addEventListener("mousemove", onMove);
-
-  // Touch events
-  document.addEventListener("touchstart", onStart);
-  document.addEventListener("touchend", onEnd);
-  document.addEventListener("touchcancel", onEnd);
-  document.addEventListener("touchmove", onMove);
-  return () => {
-    document.removeEventListener("mousedown", onStart);
-    document.removeEventListener("mouseup", onEnd);
-    document.removeEventListener("mousemove", onMove);
-
-    // Touch events
-    document.removeEventListener("touchstart", onStart);
-    document.removeEventListener("touchend", onEnd);
-    document.removeEventListener("touchcancel", onEnd);
-    document.removeEventListener("touchmove", onMove);
-  };
+const moveMouse = (currentPos, previousPos) => {
+  const newPosition = `${currentPos.x - previousPos.x},${currentPos.y - previousPos.y}`;
+  postData(newPosition);
 };
 
-const unlisten = listenMouseMove(
-  (current, previous) => {
-    postData(`${current.x - previous.x},${current.y - previous.y}`);
-  },
-  (current, previous) => {
-    postData(`${current.x - previous.x},${current.y - previous.y}`);
-  }
-);
+const getPointerPosition = (pointerEvent) => {
+  return { x: pointerEvent.clientX, y: pointerEvent.clientY };
+};
+
+const pointerDown = (pointerEvent) => {
+  pointerIsDown = true;
+  previousPos = getPointerPosition(pointerEvent); // Initialise position so we can move relative to it
+};
+
+const pointerUp = () => {
+  pointerIsDown = false;
+};
+
+const pointerMove = (pointerEvent) => {
+  if (!pointerIsDown) return;
+  const currentPos = getPointerPosition(pointerEvent);
+  moveMouse(currentPos, previousPos);
+  previousPos = currentPos;
+};
 
 window.addEventListener("load", () => {
-  statusEl = document.getElementById("status");
+  connectionStatusIndicator = document.getElementById("status");
+
+  document.addEventListener("pointerdown", pointerDown);
+  document.addEventListener("pointerup", pointerUp);
+  document.addEventListener("pointermove", pointerMove);
 
   // Mouse buttons
   document.getElementById("left").onclick = () => {

@@ -19,7 +19,7 @@ p {
   color: rgb(128, 128, 128);
   font-size: small;
 }
-#header {
+header {
   padding-top: 4vh;
   padding-bottom: 14vh;
   background-image: linear-gradient(white 30%, transparent);
